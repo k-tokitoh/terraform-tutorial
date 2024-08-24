@@ -2,7 +2,6 @@
 # VPC
 # ==========================================================================================================================
 
-
 # 2つめのラベルはterraform内で識別するための値
 resource "aws_vpc" "vpc" {
   # 192.168.0.0は一般にprivate ip addressの範囲として使われる（public ip addressとしては利用されない）
@@ -35,6 +34,7 @@ resource "aws_vpc" "vpc" {
     Env     = var.environment
   }
 }
+
 
 # ==========================================================================================================================
 # subnet
@@ -124,10 +124,21 @@ resource "aws_subnet" "private_subnet_1c" {
   }
 }
 
+
 # ==========================================================================================================================
 # route table
 # ==========================================================================================================================
 
+# vpc [1] - [n] route table [1] - [n] subnet
+# route talbeは複数のrouteをもつ
+# routeは、送信先となるipアドレス（の範囲）と、送信先がその範囲に該当した場合にどこに向けてパケットを送出するかを定めたルールである
+# subnetにおいて送信されたパケットは、そのsubnetに関連付けられたroute tableに基づいて、順次routeと照らし合わせ、該当したrouteに規定されたtargetに向けて送出される
+# route tableはデフォルトで、紐づいたVPCのcidr blockを送信先ipアドレス範囲とし、local（=VPC自身）をtargetとするrouteを持つ
+# つまり、以下のroute tableはデフォルトで以下のrouteを持つ
+# 送信先ipアドレス範囲: 192.168.0.0/20, ターゲット: local
+# 例えばpublic_subnet_1aには、public_route_tableが紐づけられている
+# なので、public_subnet_1a内で送信されたパケットは、public_route_tableに基づいてroutingされる
+# 送信先が192.168.2.50であれば、192.168.0.0/20に該当するので、そのパケットはlocal（=このvpc自身）に向けて送出される
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.vpc.id
 
@@ -168,4 +179,26 @@ resource "aws_route_table_association" "private_route_table_1a" {
 resource "aws_route_table_association" "private_route_table_1c" {
   route_table_id = aws_route_table.private_route_table.id
   subnet_id      = aws_subnet.private_subnet_1c.id
+}
+
+
+# ==========================================================================================================================
+# internet gateway
+# ==========================================================================================================================
+
+resource "aws_internet_gateway" "internet_gateway" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-internetGateway"
+    Project = var.project
+    Env     = var.environment
+  }
+}
+
+# public route tableに、インターネットゲートウェイへのルートを追加登録する
+resource "aws_route" "route_for_internet_gateway_on_public_route_table" {
+  route_table_id         = aws_route_table.public_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.internet_gateway.id
 }
