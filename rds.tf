@@ -33,3 +33,22 @@ resource "aws_db_option_group" "mysql_option_group" {
   major_engine_version = "8.0"
 }
 
+
+# ==========================================================================================================================
+# subnet group
+# ==========================================================================================================================
+
+# subnet groupに指定されたいずれかのsubnetにRDSインスタンスが配置される
+resource "aws_db_subnet_group" "mysql_subnet_group" {
+  name = "${lower(var.project)}-${lower(var.environment)}-mysqlsubnetgroup"
+  subnet_ids = [
+    aws_subnet.private_subnet_1a.id,
+    aws_subnet.private_subnet_1c.id
+  ]
+
+  tags = {
+    Name        = "${var.project}-${var.environment}-mysqlSubnetGroup"
+    project     = var.project
+    Environment = var.environment
+  }
+}
