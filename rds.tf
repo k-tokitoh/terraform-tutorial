@@ -21,3 +21,15 @@ resource "aws_db_parameter_group" "mysql_paramter_group" {
     value = "utf8mb4"
   }
 }
+
+
+# ==========================================================================================================================
+# option group
+# ==========================================================================================================================
+
+resource "aws_db_option_group" "mysql_option_group" {
+  name                 = "${lower(var.project)}-${lower(var.environment)}-mysqloptiongroup"
+  engine_name          = "mysql"
+  major_engine_version = "8.0"
+}
+
