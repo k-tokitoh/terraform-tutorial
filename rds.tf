@@ -39,6 +39,7 @@ resource "aws_db_option_group" "mysql_option_group" {
 # ==========================================================================================================================
 
 # subnet groupに指定されたいずれかのsubnetにRDSインスタンスが配置される
+# マルチAZ配置する場合は、subnet groupに含まれる複数のsubnetに配置される
 resource "aws_db_subnet_group" "mysql_subnet_group" {
   name = "${lower(var.project)}-${lower(var.environment)}-mysqlsubnetgroup"
   subnet_ids = [
@@ -52,3 +53,16 @@ resource "aws_db_subnet_group" "mysql_subnet_group" {
     Environment = var.environment
   }
 }
+
+
+# ==========================================================================================================================
+# instance
+# ==========================================================================================================================
+
+resource "random_string" "rds_password" {
+  length = 16
+
+  # 特殊文字を含むか否か
+  special = true
+}
+
