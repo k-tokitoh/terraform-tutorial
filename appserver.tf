@@ -25,7 +25,11 @@ resource "aws_instance" "application_server" {
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnet_1a.id
   associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.application_security_group.id]
+
+  # インスタンスプロファイル（≒ ロール）を適用する
+  iam_instance_profile = aws_iam_instance_profile.application_instance_profile.name
+
+  vpc_security_group_ids = [aws_security_group.application_security_group.id]
 
   key_name = aws_key_pair.key_pair.key_name
 
