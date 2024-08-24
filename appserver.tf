@@ -40,3 +40,47 @@ resource "aws_instance" "application_server" {
     Type        = "application"
   }
 }
+
+
+# ==========================================================================================================================
+# parameter store
+# ==========================================================================================================================
+
+resource "aws_ssm_parameter" "database_host" {
+  name = "/${var.project}/${var.environment}/app/DATABASE_HOST"
+
+  # 平文の文字列なら"String", 暗号化された文字列なら"SecureString"
+  type = "String"
+
+  # ホスト名
+  # ex. terraformtutorial-dev-mysqlinstance.xxxxxxxx.us-east-1.rds.amazonaws.com
+  value = aws_db_instance.mysql_instance.address
+}
+
+resource "aws_ssm_parameter" "database_port" {
+  name = "/${var.project}/${var.environment}/app/DATABASE_PORT"
+  type = "String"
+
+  value = aws_db_instance.mysql_instance.port
+}
+
+resource "aws_ssm_parameter" "database_name" {
+  name = "/${var.project}/${var.environment}/app/DATABASE_NAME"
+  type = "String"
+
+  value = aws_db_instance.mysql_instance.db_name
+}
+
+resource "aws_ssm_parameter" "database_username" {
+  name = "/${var.project}/${var.environment}/app/DATABASE_USERNAME"
+  type = "SecureString"
+
+  value = aws_db_instance.mysql_instance.username
+}
+
+resource "aws_ssm_parameter" "database_password" {
+  name = "/${var.project}/${var.environment}/app/DATABASE_PASSWORD"
+  type = "SecureString"
+
+  value = aws_db_instance.mysql_instance.password
+}
