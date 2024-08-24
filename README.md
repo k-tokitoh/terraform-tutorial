@@ -17,7 +17,24 @@ https://www.udemy.com/course/iac-with-terraform/
 
 <img src="images/structure-details.png" width="800px">
 
-# howto
+# cli commands
 
-- `terraform apply`
-- `terraform destroy`
+- 適用
+  - `terraform apply`
+- 削除
+  - `terraform destroy`
+- リソース一覧
+  - `terraform state list`
+- リソース詳細
+  - `terraform state show <ADDRESS>`
+  - <ADDRESS>はリソース一覧で表示される文字列
+- リソース名の変更
+  - `terraform state mv <SRC_ADDRESS> <DST_ADDRESS>`
+  - 上記コマンドにより tfstate でのリソース名が更新される（tf ファイルで別途リソース名を更新する必要がある点に注意する）
+- tfstate にリソースを取り込む
+  - `terraform import <ADDRESS> <ID>`
+  - ex. `terraform import aws_instance.imported i-00000000000`
+- リソースを tf 管理対象外にする = tfstate から削除する
+  - `terraform state rm <ADDRESS>`
+- 実際のクラウド上の状態を tfstate に反映する
+  - `terraform refresh`
