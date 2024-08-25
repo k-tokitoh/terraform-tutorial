@@ -32,6 +32,22 @@ resource "aws_lb_listener" "alb_listener_http" {
   }
 }
 
+resource "aws_lb_listener" "alb_listener_https" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+
+  # see: https://www.youtube.com/watch?v=2QHdvEHN050
+  ssl_policy      = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn = aws_acm_certificate.existing_cerfiticate.arn
+
+  default_action {
+    # そのまま転送するよ
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb_target_group.arn
+  }
+}
+
 
 # ==========================================================================================================================
 # target group

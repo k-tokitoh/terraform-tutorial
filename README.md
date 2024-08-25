@@ -13,6 +13,8 @@ https://www.udemy.com/course/iac-with-terraform/
 
 - `terraform import aws_route53_zone.existing_zone {HOST_ZONE_ID}`
   - HOST_ZONE_ID はマネジメントコンソールで確認のこと
+- `terraform import aws_acm_certificate.existing_cerfiticate {ARN}`
+  - ARN はマネジメントコンソールで確認のこと
 
 # 構成
 
