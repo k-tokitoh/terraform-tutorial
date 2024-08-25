@@ -68,7 +68,8 @@ resource "aws_lb_target_group" "alb_target_group" {
 }
 
 # アプリケーションサーバに送る
-resource "aws_lb_target_group_attachment" "alb_target_group_attachment" {
-  target_group_arn = aws_lb_target_group.alb_target_group.arn
-  target_id        = aws_instance.application_server.id
-}
+# ec2を起動テンプレートからauto scalingすることとして、targetを直接指定できなくなったのでコメントアウト
+# resource "aws_lb_target_group_attachment" "alb_target_group_attachment" {
+#   target_group_arn = aws_lb_target_group.alb_target_group.arn
+#   target_id        = aws_instance.application_server.id
+# }
