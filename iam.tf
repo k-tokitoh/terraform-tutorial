@@ -66,6 +66,8 @@ resource "aws_iam_role_policy_attachment" "application_server_iam_role_ec2_reado
 # trial for multiple resource generation (count)
 # ==========================================================================================================================
 
+# 複数リソースの作成とは関係ない話だが、userのパスワードを得るには、安全に通信するためにpgpというのを利用する必要がある
+# 手元でキーペアをつくり、公開鍵を渡して、暗号化したものが返ってくるので、手元の秘密鍵で複合するという流れ
 resource "aws_iam_user" "multiple_users" {
   count = 3
   name  = "${var.project}-${var.environment}-multipleUsers${count.index}"
