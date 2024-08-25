@@ -58,10 +58,10 @@ https://www.udemy.com/course/iac-with-terraform/
 
 - for（python の内包表記みたいなやつ）
   - list/set -> list
-    - [for s in var.list : upper(s)]
+    - `[for s in var.list : upper(s)]`
   - list/set -> map
-    - {for s in var.list : s => upper(s)}
+    - `{for s in var.list : s => upper(s)}`
   - map -> list
-    - [for k, v in var.map : upper(v)]
+    - `[for k, v in var.map : upper(v)]`
   - map -> map
-    - {for k, v in var.map : k => upper(v)}
+    - `{for k, v in var.map : k => upper(v)}`
