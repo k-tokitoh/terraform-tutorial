@@ -12,7 +12,7 @@ resource "aws_route53_zone" "existing_zone" {
   force_destroy = false
 }
 
-resource "aws_route53_record" "route53_record" {
+resource "aws_route53_record" "route53_record_alb" {
   zone_id = aws_route53_zone.existing_zone.zone_id
   name    = "terraform-tutorial-alb.${var.domain}"
 
