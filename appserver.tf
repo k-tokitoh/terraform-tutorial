@@ -127,3 +127,41 @@ resource "aws_launch_template" "launch_template_application" {
   # 実際に起動可能にするには、手動でec2に接続してos/middlewareをインストールしてその状態をAMIとして保存し、起動テンプレートからそのAMIを参照する必要がある
   user_data = filebase64("./src/initialize.sh")
 }
+
+
+# ==========================================================================================================================
+# auto scaing group
+# ==========================================================================================================================
+
+resource "aws_autoscaling_group" "autoscaling_group_application" {
+  name = "${var.project}-${var.environment}-autoscalingGroupApplication"
+
+  max_size = 1
+  min_size = 1
+  # 希望するインスタンスの数
+  desired_capacity = 1
+
+  # インスタンス起動後、どれくらい経過したらヘルスチェックを行うか。単位は秒
+  health_check_grace_period = 300
+  health_check_type         = "ELB"
+
+  vpc_zone_identifier = [
+    aws_subnet.public_subnet_1a.id,
+    aws_subnet.public_subnet_1c.id
+  ]
+
+  target_group_arns = [aws_lb_target_group.alb_target_group.arn]
+
+  mixed_instances_policy {
+    launch_template {
+      launch_template_specification {
+        launch_template_id = aws_launch_template.launch_template_application.id
+        version            = "$Latest"
+      }
+
+      override {
+        instance_type = "t2.micro"
+      }
+    }
+  }
+}
