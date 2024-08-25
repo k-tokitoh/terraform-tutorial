@@ -17,12 +17,15 @@ https://www.udemy.com/course/iac-with-terraform/
 
 <img src="images/structure-details.png" width="800px">
 
-# cli commands
+# CLI
 
 - 適用
   - `terraform apply`
 - 削除
   - `terraform destroy`
+- コンソール
+  - `terraform console`
+  - 関数とかを試せる
 - リソース一覧
   - `terraform state list`
 - リソース詳細
@@ -38,3 +41,18 @@ https://www.udemy.com/course/iac-with-terraform/
   - `terraform state rm <ADDRESS>`
 - 実際のクラウド上の状態を tfstate に反映する
   - `terraform refresh`
+- 依存関係の可視化
+  - `terraform graph > <FILENAME>`で依存関係を表現する DOT 形式のファイルを出力
+  - DOT を可視化する（ex. vscode graphviz extension）
+
+# HCL
+
+- for（python の内包表記みたいなやつ）
+  - list/set -> list
+    - [for s in var.list : upper(s)]
+  - list/set -> map
+    - {for s in var.list : s => upper(s)}
+  - map -> list
+    - [for k, v in var.map : upper(v)]
+  - map -> map
+    - {for k, v in var.map : k => upper(v)}
