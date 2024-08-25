@@ -65,3 +65,10 @@ https://www.udemy.com/course/iac-with-terraform/
     - `[for k, v in var.map : upper(v)]`
   - map -> map
     - `{for k, v in var.map : k => upper(v)}`
+
+# 後片付け
+
+- 削除したくないリソース管理対象外とする
+  - `terraform state rm aws_route53_zone.existing_zone`
+  - `terraform state rm aws_acm_certificate.existing_cerfiticate`
+- `terraform destroy`
