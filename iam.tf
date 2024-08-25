@@ -60,3 +60,13 @@ resource "aws_iam_role_policy_attachment" "application_server_iam_role_ec2_reado
 
 # RDSへの接続においてはssmのparameters storeに格納した情報でmysql認証を行うため、ロール（による認証）は不要
 # mysql認証ではなくIAMロールによる認証を選択することも2017年から可能になっているが、複雑なためメジャーではない
+
+
+# ==========================================================================================================================
+# trial for multiple resource generation (count)
+# ==========================================================================================================================
+
+resource "aws_iam_user" "multiple_users" {
+  count = 3
+  name  = "${var.project}-${var.environment}-multipleUsers${count.index}"
+}

@@ -202,3 +202,25 @@ resource "aws_route" "route_for_internet_gateway_on_public_route_table" {
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = aws_internet_gateway.internet_gateway.id
 }
+
+
+# ==========================================================================================================================
+# trial for multiple resource generation
+# ==========================================================================================================================
+
+resource "aws_vpc" "multiple_subnet_vpc" {
+  cidr_block = "192.168.0.0/20"
+}
+
+resource "aws_subnet" "multiple_subnet" {
+  for_each = {
+    "192.168.1.0/24" = "us-east-1a",
+    "192.168.2.0/24" = "us-east-1b",
+    "192.168.3.0/24" = "us-east-1c",
+
+  }
+
+  vpc_id            = aws_vpc.multiple_subnet_vpc.id
+  cidr_block        = each.key
+  availability_zone = each.value
+}
