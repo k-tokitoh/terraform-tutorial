@@ -23,6 +23,18 @@ provider "aws" {
   region  = "us-east-1"
 }
 
+provider "aws" {
+  # ailasを設定することで、以下のようにしてこのregionでresourceを管理できる
+  # resource "x" "y" {
+  #  provider = aws.tokyo
+  # }
+  alias = "tokyo"
+
+  profile = "private"
+  region  = "ap-northeast-1"
+}
+
+
 variable "project" {
   type = string
 }
