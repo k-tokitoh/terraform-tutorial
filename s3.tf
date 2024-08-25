@@ -11,7 +11,7 @@ resource "random_string" "s3_unique_key" {
 # static bucket
 # ==========================================================================================================================
 
-# 配信したい静的 = staticなファイルを配置する、publicなバケット
+# 配信したい静的 = staticなファイルを配置する、privateなバケット
 resource "aws_s3_bucket" "s3_static_bucket" {
   # バケット名
   bucket = "${lower(var.project)}-${lower(var.environment)}-static-${random_string.s3_unique_key.result}"
@@ -28,7 +28,7 @@ resource "aws_s3_bucket_public_access_block" "s3_static_bucket_public_access_blo
   ignore_public_acls = true
 
   # 「パブリックアクセスOKだよ」というpolicyの追加をブロックする
-  block_public_policy = false
+  block_public_policy = true
 
   # 「パブリックアクセスOKだよ」というpolicyが元から存在していた場合、その許可を無視する（パブリックアクセスを禁じる）
   restrict_public_buckets = true
@@ -45,9 +45,8 @@ data "aws_iam_policy_document" "s3_static_bucket_policy" {
     actions   = ["s3:GetObject"]
     resources = ["arn:aws:s3:::${aws_s3_bucket.s3_static_bucket.bucket}/*"]
     principals {
-      # ユーザーでも、AWSリソースでも
-      type        = "*"
-      identifiers = ["*"]
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.cloudfront_origin_access_identity_s3.iam_arn]
     }
 
   }

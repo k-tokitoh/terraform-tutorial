@@ -40,6 +40,19 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     }
   }
 
+  # s3のorigin
+  origin {
+    domain_name = aws_s3_bucket.s3_static_bucket.bucket_regional_domain_name
+
+    # cloudfront内部でoriginを一意に特定するための文字列
+    # ここではbucketのidを利用する
+    origin_id = aws_s3_bucket.s3_static_bucket.id
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.cloudfront_origin_access_identity_s3.cloudfront_access_identity_path
+    }
+  }
+
   default_cache_behavior {
     # POSTはいらないのか？
     allowed_methods = ["GET", "HEAD"]
@@ -65,6 +78,36 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     min_ttl                = 0
     default_ttl            = 0
     max_ttl                = 0
+  }
+
+  # デフォルトでないbehavior
+  ordered_cache_behavior {
+    path_pattern    = "/public/*"
+    allowed_methods = ["GET", "HEAD"]
+    cached_methods  = ["GET", "HEAD"]
+
+    target_origin_id = aws_s3_bucket.s3_static_bucket.id
+
+    forwarded_values {
+      query_string = false
+      headers      = []
+      cookies {
+        forward = "none"
+      }
+    }
+
+    viewer_protocol_policy = "redirect-to-https"
+
+    # 単位は秒
+    # originの値が更新されたら、ただちにキャッシュを破棄する
+    min_ttl = 0
+    # originがCache-ControlヘッダやExpiresヘッダによりTTLの指定をしていなかった場合に適用される
+    default_ttl = 60 * 60 * 24 # 1日
+    # originがCache-ControlヘッダやExpiresヘッダによりTTLを指定していたとしても、max_ttlが経過したらキャッシュを破棄する
+    max_ttl = 60 * 60 * 24 * 365 # 1年
+
+    # コンテンツ圧縮を有効にする
+    compress = true
   }
 
   restrictions {
@@ -100,4 +143,9 @@ resource "aws_route53_record" "route53_record_cloudfront" {
     zone_id                = aws_cloudfront_distribution.cloudfront_distribution.hosted_zone_id
     evaluate_target_health = true
   }
+}
+
+# cloudfrontからs3にアクセスする場合にどういう立場でもってアクセスするかを定義する
+resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_identity_s3" {
+  comment = "terraform-tutorial-cloudfront"
 }
