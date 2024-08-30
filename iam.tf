@@ -35,14 +35,57 @@ data "aws_iam_policy_document" "ec2_assume_role" {
 
 # policy
 # そのrole = 帽子を被っていたら何ができるか、を定める
-# dataとして定義することもできるが、awsが標準で提供しているものであれば、コンソールからarnをコピペすればOK
+
+# policyの書き方いろいろ
+# see:  https://dev.classmethod.jp/articles/writing-iam-policy-with-terraform/
+#
+# 1
+# resource "aws_iam_policy" "xx" {
+#   policy = file("./xx.json")
+# }
+# 
+# 2
+# resource "aws_iam_policy" "xx" {
+#   policy = templatefile(
+#     "./xx.json",
+#     { xx = xx },
+#   )
+# }
+# 
+# 3
+# resource "aws_iam_policy" "xx" {
+#   policy = <<EOS
+# {
+#   "xx": "${xx}"
+# }
+# EOS
+# }
+# 
+# 4
+# resource "aws_iam_policy" "xx" {
+#   policy = jsonencode({
+#     "xx" = xx
+#   })
+# }
+# 
+# 5
+# resource "aws_iam_policy" "xx" {
+#   policy = data.aws_iam_policy_document.xx.json
+# }
+# data "aws_iam_policy_document" "xx" {
+#   statement {
+#     xx = xx
+#   }
+# }
+
 
 # policyのアタッチ
 # role [1] - [n] policyのアタッチ [n] - [1] policy
 
 # ssm の parameter store から環境変数を読み取れるようにする
 resource "aws_iam_role_policy_attachment" "application_server_iam_role_ssm_readonly" {
-  role       = aws_iam_role.application_server_iam_role.name
+  role = aws_iam_role.application_server_iam_role.name
+  # aws管理ポリシーは、コンソールからarnをコピペすればOK
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
 }
 
